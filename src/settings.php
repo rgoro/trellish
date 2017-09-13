@@ -14,6 +14,16 @@ return [
             'name' => 'slim-app',
             'path' => __DIR__ . '/../logs/app.log',
             'level' => \Monolog\Logger::DEBUG,
-        ],
+		],
+		'test_db' => [
+			'db_name' => 'test',
+			'collection_name' => 'test',
+			'dns' => 'mongodb://localhost:27017'
+		],
+		'db' => [
+			'db_name' => 'trellish',
+			'collection_name' => 'tasks',
+			'dns' => 'mongodb://localhost:27017'
+		]
     ],
 ];
