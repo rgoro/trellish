@@ -42,9 +42,7 @@ class TasksApiController {
 		}
 	}
 
-	public function update($id) {
-		$data = $this->request->getParsedBody();
-	
+	private function do_update($id, $data) {
 		// Remove id just in case
 		unset($data['_id']);
 		$data['updated_at'] = time();
@@ -64,12 +62,18 @@ class TasksApiController {
 		}
 	}
 
+	public function update($id) {
+		$data = $this->request->getParsedBody();
+
+		return $this->do_update($id, $data);
+	}
+
 	public function mark_complete($id) {
-		return $this->response->withJson(['marked' => true], 200);
+		return $this->do_update($id, ['completed' => true]);
 	}
 
 	public function mark_incomplete($id) {
-		return $this->response->withJson(['marked' => true], 200);
+		return $this->do_update($id, ['completed' => false]);
 	}
 
 	public function show($id) {
