@@ -31,7 +31,7 @@ $app->get('/tasks/', function ($request, $response, $args) {
 	return (new TasksApiController($request, $response, $this))->list();
 });
 
-$app->delete('/delete/{id}/', function ($request, $response, $args) {
+$app->delete('/delete/{id}', function ($request, $response, $args) {
 	return (new TasksApiController($request, $response, $this))->delete($args['id']);
 });
 

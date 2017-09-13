@@ -95,8 +95,21 @@ class TasksApiController {
 		return $this->response->withJson($tasks, 200);
 	}
 
+	// This could also be implemented as a virtual delete, updating a 'deleted' field
 	public function delete($id) {
-		return $this->response;
+		try {
+			$tasks_collection = $this->container->tasks_collection;
+
+			$deleteResult = $tasks_collection->deleteOne(['_id' => new MongoDB\BSON\ObjectID($id)]);
+
+			if ($deleteResult->getDeletedCount() > 0) {
+				return $this->response->withStatus(200);
+			} else {
+				return $this->response->withStatus(404);
+			}
+		} catch(Exception $e) {
+			return $this->error_status($e->getMessage(), 500);
+		}
 	}
 
 	private function error_status($message, $error_code, $data = null) {
