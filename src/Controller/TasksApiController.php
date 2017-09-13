@@ -21,7 +21,7 @@ class TasksApiController {
 
 	public function create() {
 		$data = $this->request->getParsedBody();
-		// Verificar campos obligatorios
+
 		if (!array_key_exists('title', $data) || !array_key_exists('due_date', $data)) {
 			return $this->error_status('Required fields missing', 400, $data);
 		}
@@ -43,7 +43,25 @@ class TasksApiController {
 	}
 
 	public function update($id) {
-		return $this->response->withJson($data, 200);
+		$data = $this->request->getParsedBody();
+	
+		// Remove id just in case
+		unset($data['_id']);
+		$data['updated_at'] = time();
+
+		try {
+			$tasks_collection = $this->container->tasks_collection;
+
+			$updateResult = $tasks_collection->updateOne(['_id' => new MongoDB\BSON\ObjectID($id)], ['$set' => $data]);
+
+			if ($updateResult->getMatchedCount() > 0) {
+				return $this->response->withStatus(200);
+			} else {
+				return $this->response->withStatus(404);
+			}
+		} catch(Exception $e) {
+			return $this->error_status($e->getMessage(), 500);
+		}
 	}
 
 	public function mark_complete($id) {
