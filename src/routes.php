@@ -23,7 +23,7 @@ $app->put('/mark_incomplete/{id}', function ($request, $response, $args) {
 	return (new TasksApiController($request, $response, $this))->mark_incomplete($args['id']);
 });
 
-$app->get('/task/{id}/', function ($request, $response, $args) {
+$app->get('/task/{id}', function ($request, $response, $args) {
 	return (new TasksApiController($request, $response, $this))->show($args['id']);
 });
 
