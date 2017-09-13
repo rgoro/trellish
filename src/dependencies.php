@@ -1,6 +1,5 @@
 <?php
 // DIC configuration
-
 $container = $app->getContainer();
 
 // view renderer
@@ -16,4 +15,29 @@ $container['logger'] = function ($c) {
     $logger->pushProcessor(new Monolog\Processor\UidProcessor());
     $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
     return $logger;
+};
+
+// Mongo
+$container['test_collection'] = function ($c) {
+	$settings = $c->get('settings')['test_db'];
+
+	$client = new MongoDB\Client($settings['dns']);
+
+	$database = $client->{$settings['db_name']};
+
+	$collection = $database->{$settings['collection_name']};
+
+	return $collection;
+};
+
+$container['tasks_collection'] = function ($c) {
+	$settings = $c->get('settings')['db'];
+
+	$client = new MongoDB\Client($settings['dns']);
+
+	$database = $client->{$settings['db_name']};
+
+	$collection = $database->{$settings['collection_name']};
+
+	return $collection;
 };
