@@ -34,7 +34,7 @@ class TasksApiController {
 			$tasks_collection = $this->container->tasks_collection;
 
 			$result = $tasks_collection->insertOne($data);
-			$data['_id'] = (string)$result->getInsertedId();
+			$data['_id'] = $result->getInsertedId();
 
 			return $this->response->withJson($data, 200);
 		} catch(Exception $e) {
@@ -55,7 +55,18 @@ class TasksApiController {
 	}
 
 	public function show($id) {
-		return $this->response->withJson($task, 200);
+		try {
+			$tasks_collection = $this->container->tasks_collection;
+			$task = $tasks_collection->findOne(['_id' => new MongoDB\BSON\ObjectID($id)]);
+
+			if (is_null($task)) {
+				return $this->response->withStatus(404);
+			} else {
+				return $this->response->withJson($task, 200);
+			}
+		} catch(Exception $e) {
+			return $this->error_status($e->getMessage(), 500);
+		}
 	}
 
 	public function list() {
