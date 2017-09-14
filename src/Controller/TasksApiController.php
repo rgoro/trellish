@@ -6,6 +6,8 @@ class TasksApiController {
 	private $response;
 	private $container;
 
+	const PAGE_SIZE = 5;
+
 	public function __construct($request, $response, $container) {
 		$this->request = $request;
 		$this->response = $response;
@@ -92,7 +94,85 @@ class TasksApiController {
 	}
 
 	public function list() {
-		return $this->response->withJson($tasks, 200);
+		$params = $this->request->getQueryParams();
+
+		$query = [];
+		if (array_key_exists('duedate_from', $params)) {
+			if (strtotime($params['duedate_from']) !== false) {
+				$query['due_time']['$gte'] = strtotime($params['duedate_from']);
+			} else if (intval($params['duedate_from']) > 0) {
+				$query['due_time']['$gte'] = intval($params['duedate_from']);
+			} else {
+				return $this->error_status('Invalid min. due date', 400, $params);
+			}
+		}
+		if (array_key_exists('duedate_to', $params)) {
+			if (strtotime($params['duedate_to']) !== false) {
+				$query['due_time']['$lte'] = strtotime($params['duedate_to']);
+			} else if (intval($params['duedate_to']) > 0) {
+				$query['due_time']['$lte'] = intval($params['duedate_to']);
+			} else {
+				return $this->error_status('Invalid max. due date', 400, $params);
+			}
+		}
+
+		if (array_key_exists('created_from', $params)) {
+			if (strtotime($params['created_from']) !== false) {
+				$query['created_at']['$gte'] = strtotime($params['created_from']);
+			} else if (intval($params['created_from']) > 0) {
+				$query['created_at']['$gte'] = intval($params['created_from']);
+			} else {
+				return $this->error_status('Invalid min. creation date', 400, $params);
+			}
+		}
+		if (array_key_exists('created_to', $params)) {
+			if (strtotime($params['created_to']) !== false) {
+				$query['created_at']['$lte'] = strtotime($params['created_to']);
+			} else if (intval($params['created_to']) > 0) {
+				$query['created_at']['$lte'] = intval($params['created_to']);
+			} else {
+				return $this->error_status('Invalid max. creation date', 400, $params);
+			}
+		}
+
+		if (array_key_exists('updated_from', $params)) {
+			if (strtotime($params['updated_from']) !== false) {
+				$query['updated_at']['$gte'] = strtotime($params['updated_from']);
+			} else if (intval($params['updated_from']) > 0) {
+				$query['updated_at']['$gte'] = intval($params['updated_from']);
+			} else {
+				return $this->error_status('Invalid min. creation date', 400, $params);
+			}
+		}
+		if (array_key_exists('updated_to', $params)) {
+			if (strtotime($params['updated_to']) !== false) {
+				$query['updated_at']['$lte'] = strtotime($params['updated_to']);
+			} else if (intval($params['updated_to']) > 0) {
+				$query['updated_at']['$lte'] = intval($params['updated_to']);
+			} else {
+				return $this->error_status('Invalid max. update date', 400, $params);
+			}
+		}
+
+		// Notice that 'onlycomplete' overrides 'onlyincomplete'
+		if (array_key_exists('onlycomplete', $params)) {
+			$query['complete'] = true;
+		} else if (array_key_exists('onlyincomplete', $params)) {
+			$query['complete'] = false;
+		}
+
+		$options = ['limit' => self::PAGE_SIZE];
+		if (array_key_exists('page', $params)) {
+			$options['skip'] = $params['page'] * self::PAGE_SIZE;
+		}
+
+		try {
+			$tasks_collection = $this->container->tasks_collection;
+			$tasks = $tasks_collection->find($query, $options);
+			return $this->response->withJson($tasks->toArray(), 200);
+		} catch(Exception $e) {
+			return $this->error_status($e->getMessage(), 500);
+		}
 	}
 
 	// This could also be implemented as a virtual delete, updating a 'deleted' field
