@@ -3,11 +3,11 @@
 require_once('Controller/TasksApiController.php');
 
 // Routes
-$app->get('/test/', function ($request, $response, $args) {
+$app->get('/test', function ($request, $response, $args) {
 	return (new TasksApiController($request, $response, $this))->test();
 });
 
-$app->post('/create/', function ($request, $response, $args) {
+$app->post('/create', function ($request, $response, $args) {
 	return (new TasksApiController($request, $response, $this))->create();
 });
 
@@ -27,7 +27,7 @@ $app->get('/task/{id}', function ($request, $response, $args) {
 	return (new TasksApiController($request, $response, $this))->show($args['id']);
 });
 
-$app->get('/tasks/', function ($request, $response, $args) {
+$app->get('/tasks', function ($request, $response, $args) {
 	return (new TasksApiController($request, $response, $this))->list();
 });
 
