@@ -35,8 +35,8 @@ class TasksApiController {
 		}
 
 		$data['completed'] = false;
-		$data['created_at'] = $data['updated_at'] = time();
-		$data['due_time'] = $due_time;
+		$data['created_at'] = $data['updated_at'] = new MongoDB\BSON\UTCDateTime();
+		$data['due_time'] = new MongoDB\BSON\UTCDateTime($due_time * 1000); // miliseconds
 
 		try {
 			$tasks_collection = $this->container->tasks_collection;
@@ -101,30 +101,27 @@ class TasksApiController {
 
 	public function list() {
 		$queryHash = sha1($this->request->getUri()->getQuery());
-		$this->container->logger->addInfo("Query Hash: «" . $queryHash . "»");
 		$memcached = $this->container->memcached;
 		$tasks = $memcached->get($queryHash);
 
 		if ($tasks === false) {
-			$this->container->logger->addInfo("Query no estaba en cache");
-
 			$params = $this->request->getQueryParams();
 
 			$query = [];
 			if (array_key_exists('duedate_from', $params)) {
 				if (strtotime($params['duedate_from']) !== false) {
-					$query['due_time']['$gte'] = strtotime($params['duedate_from']);
+					$query['due_time']['$gte'] = new MongoDB\BSON\UTCDateTime(strtotime($params['duedate_from']) * 1000);
 				} else if (intval($params['duedate_from']) > 0) {
-					$query['due_time']['$gte'] = intval($params['duedate_from']);
+					$query['due_time']['$gte'] = new MongoDB\BSON\UTCDateTime(intval($params['duedate_from']) * 1000);
 				} else {
 					return $this->error_status('Invalid min. due date', 400, $params);
 				}
 			}
 			if (array_key_exists('duedate_to', $params)) {
 				if (strtotime($params['duedate_to']) !== false) {
-					$query['due_time']['$lte'] = strtotime($params['duedate_to']);
+					$query['due_time']['$lte'] = new MongoDB\BSON\UTCDateTime(strtotime($params['duedate_to']) * 1000);
 				} else if (intval($params['duedate_to']) > 0) {
-					$query['due_time']['$lte'] = intval($params['duedate_to']);
+					$query['due_time']['$lte'] = new MongoDB\BSON\UTCDateTime(intval($params['duedate_to']) * 1000);
 				} else {
 					return $this->error_status('Invalid max. due date', 400, $params);
 				}
@@ -132,18 +129,18 @@ class TasksApiController {
 
 			if (array_key_exists('created_from', $params)) {
 				if (strtotime($params['created_from']) !== false) {
-					$query['created_at']['$gte'] = strtotime($params['created_from']);
+					$query['created_at']['$gte'] = new MongoDB\BSON\UTCDateTime(strtotime($params['created_from']) * 1000);
 				} else if (intval($params['created_from']) > 0) {
-					$query['created_at']['$gte'] = intval($params['created_from']);
+					$query['created_at']['$gte'] = new MongoDB\BSON\UTCDateTime(intval($params['created_from']) * 1000);
 				} else {
 					return $this->error_status('Invalid min. creation date', 400, $params);
 				}
 			}
 			if (array_key_exists('created_to', $params)) {
 				if (strtotime($params['created_to']) !== false) {
-					$query['created_at']['$lte'] = strtotime($params['created_to']);
+					$query['created_at']['$lte'] = new MongoDB\BSON\UTCDateTime(strtotime($params['created_to']) * 1000);
 				} else if (intval($params['created_to']) > 0) {
-					$query['created_at']['$lte'] = intval($params['created_to']);
+					$query['created_at']['$lte'] = new MongoDB\BSON\UTCDateTime(intval($params['created_to']) * 1000);
 				} else {
 					return $this->error_status('Invalid max. creation date', 400, $params);
 				}
@@ -151,18 +148,18 @@ class TasksApiController {
 
 			if (array_key_exists('updated_from', $params)) {
 				if (strtotime($params['updated_from']) !== false) {
-					$query['updated_at']['$gte'] = strtotime($params['updated_from']);
+					$query['updated_at']['$gte'] = new MongoDB\BSON\UTCDateTime(strtotime($params['updated_from']) * 1000);
 				} else if (intval($params['updated_from']) > 0) {
-					$query['updated_at']['$gte'] = intval($params['updated_from']);
+					$query['updated_at']['$gte'] = new MongoDB\BSON\UTCDateTime(intval($params['updated_from']) * 1000);
 				} else {
 					return $this->error_status('Invalid min. creation date', 400, $params);
 				}
 			}
 			if (array_key_exists('updated_to', $params)) {
 				if (strtotime($params['updated_to']) !== false) {
-					$query['updated_at']['$lte'] = strtotime($params['updated_to']);
+					$query['updated_at']['$lte'] = new MongoDB\BSON\UTCDateTime(strtotime($params['updated_to']) * 1000);
 				} else if (intval($params['updated_to']) > 0) {
-					$query['updated_at']['$lte'] = intval($params['updated_to']);
+					$query['updated_at']['$lte'] = new MongoDB\BSON\UTCDateTime(intval($params['updated_to']) * 1000);
 				} else {
 					return $this->error_status('Invalid max. update date', 400, $params);
 				}
