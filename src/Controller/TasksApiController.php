@@ -28,9 +28,14 @@ class TasksApiController {
 			return $this->error_status('Required fields missing', 400, $data);
 		}
 
+		$due_time = strtotime($data['due_date']);
+		if ($due_time === false) {
+			return $this->error_status('Invalid due date', 400, $data);
+		}
+
 		$data['completed'] = false;
 		$data['created_at'] = $data['updated_at'] = time();
-		$data['due_time'] = strtotime($data['due_date']);
+		$data['due_time'] = $due_time;
 
 		try {
 			$tasks_collection = $this->container->tasks_collection;
