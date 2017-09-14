@@ -24,6 +24,11 @@ return [
 			'db_name' => 'trellish',
 			'collection_name' => 'tasks',
 			'dns' => 'mongodb://localhost:27017'
+		],
+		'memcached' => [
+			'servers' => [
+				['host' => '127.0.0.1', 'port' => 11211, 'weight' => 0]
+			]
 		]
     ],
 ];

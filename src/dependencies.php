@@ -41,3 +41,13 @@ $container['tasks_collection'] = function ($c) {
 
 	return $collection;
 };
+
+$container['memcached'] = function ($c) {
+	$settings = $c->get('settings')['memcached'];
+	$m = new \Memcached();
+	foreach ($settings['servers'] as $s) {
+		$m->addServer($s['host'], $s['port'], $s['weight']);
+	}
+
+	return $m;
+};
