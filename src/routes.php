@@ -4,9 +4,9 @@
 require_once('Controller/TasksApiController.php');
 
 // Routes
-$app->get('/test', function ($request, $response, $args) {
-	return (new TasksApiController($request, $response, $this))->test();
-});
+# $app->get('/test', function ($request, $response, $args) {
+# 	return (new TasksApiController($request, $response, $this))->test();
+# });
 
 $app->post('/create', function ($request, $response, $args) {
 	return (new TasksApiController($request, $response, $this))->create();
@@ -36,12 +36,12 @@ $app->delete('/delete/{id}', function ($request, $response, $args) {
 	return (new TasksApiController($request, $response, $this))->delete($args['id']);
 });
 
-$app->get('/[{name}]', function ($request, $response, $args) {
-    // Sample log message
-    $this->logger->info("Slim-Skeleton '/' route");
-
-    // Render index view
-    return $this->renderer->render($response, 'index.phtml', $args);
-});
+# $app->get('/[{name}]', function ($request, $response, $args) {
+#     // Sample log message
+#     $this->logger->info("Slim-Skeleton '/' route");
+#
+#     // Render index view
+#     return $this->renderer->render($response, 'index.phtml', $args);
+# });
 
 
