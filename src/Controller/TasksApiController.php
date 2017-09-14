@@ -37,6 +37,7 @@ class TasksApiController {
 			return $this->error_status('Invalid due date', 400, $data);
 		}
 
+		unset($data['_id']); // Ignore outside IDs
 		$data['completed'] = false;
 		$data['created_at'] = $data['updated_at'] = new MongoDB\BSON\UTCDateTime();
 
