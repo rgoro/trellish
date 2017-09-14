@@ -182,14 +182,12 @@ class TasksApiController {
 				$tasks = $tasks_collection->find($query, $options)->toArray();
 				$stored = $memcached->set($queryHash, $tasks, self::ITEM_EXPIRES);
 				if ($stored === false) {
-					$this->container->logger->addError($memcached->getResultCode());
+					$this->container->logger->addError("Fallo el cacheo de la query. Nro. de error: " . $memcached->getResultCode());
 				}
 			} catch(Exception $e) {
 				return $this->error_status($e->getMessage(), 500);
 			}
 
-		} else {
-			$this->container->logger->addInfo("Query SI estaba en cache");
 		}
 
 		return $this->response->withJson($tasks, 200);
@@ -221,6 +219,7 @@ class TasksApiController {
 			$error_data['data_received'] = $data;
 		}
 
+		$this->container->logger->addError("Excepción en la operación. Mensaje de error: " . $message);
 		return $this->response->withJson($error_data, $error_code);
 	}
 }
