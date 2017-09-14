@@ -175,6 +175,8 @@ class TasksApiController {
 				$query['completed'] = false;
 			}
 
+			$this->container->logger->addDebug("Query: " . print_r($query, true));
+
 			$options = ['limit' => self::PAGE_SIZE];
 			if (array_key_exists('page', $params)) {
 				$options['skip'] = $params['page'] * self::PAGE_SIZE;
