@@ -170,9 +170,9 @@ class TasksApiController {
 
 			// Notice that 'onlycomplete' overrides 'onlyincomplete'
 			if (array_key_exists('onlycomplete', $params)) {
-				$query['complete'] = true;
+				$query['completed'] = true;
 			} else if (array_key_exists('onlyincomplete', $params)) {
-				$query['complete'] = false;
+				$query['completed'] = false;
 			}
 
 			$options = ['limit' => self::PAGE_SIZE];
