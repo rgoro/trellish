@@ -29,14 +29,16 @@ class TasksApiController {
 			return $this->error_status('Required fields missing', 400, $data);
 		}
 
-		$due_time = strtotime($data['due_date']);
-		if ($due_time === false) {
+		if (strtotime($data['due_date']) !== false) {
+			$data['due_time'] = new MongoDB\BSON\UTCDateTime(strtotime($data['due_date']) * 1000);
+		} else if (intval($data['due_date']) > 0) {
+			$data['due_time'] = new MongoDB\BSON\UTCDateTime(intval($data['due_date']) * 1000);
+		} else {
 			return $this->error_status('Invalid due date', 400, $data);
 		}
 
 		$data['completed'] = false;
 		$data['created_at'] = $data['updated_at'] = new MongoDB\BSON\UTCDateTime();
-		$data['due_time'] = new MongoDB\BSON\UTCDateTime($due_time * 1000); // miliseconds
 
 		try {
 			$tasks_collection = $this->container->tasks_collection;
